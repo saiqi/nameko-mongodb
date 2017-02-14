@@ -27,6 +27,11 @@ class MongoDatabase(DependencyProvider):
             _db.authenticate(self.container.config['MONGODB_USER'],
                                        self.container.config['MONGODB_PASSWORD'],
                                        source=self.container.config['MONGODB_AUTHENTICATION_BASE'])
+        
+        self.databases[worker_ctx] = _db
                                        
         return _db
+    
+    def worker_teardown(self, worker_ctx):
+        db = self.databases.pop(worker_ctx)
         
