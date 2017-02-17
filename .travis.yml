@@ -6,7 +6,7 @@ python:
  - '3.4'
 
 script: 
- - pytest tests
+ - py.test tests
 
 services:
  - mongodb
