@@ -16,6 +16,11 @@ setup(
     extra_requires=[
         'pytest==3.0.6'
     ],
+    entry_points = {
+        'pytest11':[
+            'nameko_mongodb=nameko_mongodb.pytest_fixtures'
+        ]
+    },
     zip_safe=True,
     license='Apache License, Version 2.0',
     classifiers=[

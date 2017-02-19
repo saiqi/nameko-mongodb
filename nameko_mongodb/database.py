@@ -5,10 +5,11 @@ from nameko.extensions import DependencyProvider
 
 
 class MongoDatabase(DependencyProvider):
+    
     def __init__(self):
         self.client = None
         self.databases = WeakKeyDictionary()
-
+        
     def setup(self):
         conn_uri = self.container.config['MONGODB_CONNECTION_URL']
 
@@ -18,17 +19,19 @@ class MongoDatabase(DependencyProvider):
         self.client.close()
         del self.client
 
+
     def get_dependency(self, worker_ctx):
         _db = self.client[self.container.service_name]
 
         if 'MONGODB_USER' in self.container.config and self.container.config['MONGODB_USER'] != "":
             _db.authenticate(self.container.config['MONGODB_USER'],
-                             self.container.config['MONGODB_PASSWORD'],
-                             source=self.container.config['MONGODB_AUTHENTICATION_BASE'])
-
+                                       self.container.config['MONGODB_PASSWORD'],
+                                       source=self.container.config['MONGODB_AUTHENTICATION_BASE'])
+        
         self.databases[worker_ctx] = _db
-
+                                       
         return _db
-
+    
     def worker_teardown(self, worker_ctx):
         db = self.databases.pop(worker_ctx)
+        
