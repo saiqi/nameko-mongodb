@@ -1,6 +1,5 @@
 from pymongo.collection import Collection
-
-pytest_plugins = 'pytester'
+from nameko_mongodb.pytest_fixtures import database, url
 
 
 def test_can_create_collection(database):

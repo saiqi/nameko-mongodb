@@ -4,6 +4,18 @@ eventlet.monkey_patch()
 from nameko.containers import ServiceContainer
 import pytest
 
+pytest_plugins = "pytester"
+
+def pytest_addoption(parser):
+    parser.addoption(
+        '--test-db-url',
+        action='store',
+        dest='TEST_DB_URL',
+        default='mongodb://localhost:27017',
+        help=(
+            'DB url for testing (e.g. mongodb://mongodb:27017)'
+        )
+    )
 
 @pytest.yield_fixture
 def container_factory():
