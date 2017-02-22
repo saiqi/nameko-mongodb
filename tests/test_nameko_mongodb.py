@@ -26,9 +26,9 @@ class DummyService(object):
 
 
 @pytest.fixture
-def config():
+def config(db_url):
     return {
-        'MONGODB_CONNECTION_URL': 'mongodb://mongodb:27017'
+        'MONGODB_CONNECTION_URL': db_url
     }
 
 
@@ -39,8 +39,7 @@ def container(config):
 
 @pytest.fixture
 def database(container):
-    return MongoDatabase().bind(container, 'database')
-
+   return MongoDatabase().bind(container, 'database')
 
 def test_setup(database):
     database.setup()
@@ -95,9 +94,9 @@ def test_weakref(database):
     assert worker_ctx not in database.databases
 
 
-def test_end_to_end(container_factory):
+def test_end_to_end(db_url, container_factory):
     config = {
-        'MONGODB_CONNECTION_URL': 'mongodb://mongodb:27017'
+        'MONGODB_CONNECTION_URL': db_url
     }
 
     container = container_factory(DummyService, config)

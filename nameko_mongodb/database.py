@@ -19,7 +19,6 @@ class MongoDatabase(DependencyProvider):
         self.client.close()
         del self.client
 
-
     def get_dependency(self, worker_ctx):
         _db = self.client[self.container.service_name]
 

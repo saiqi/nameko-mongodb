@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='nameko-mongodb',
-    version='0.0.1.dev0',
+    version='0.0.1',
     description='Simple MongoDb dependency for nameko microservices',
     author='saiqi',
     author_email='julien.bernard.iphone@gamil.com',
@@ -16,11 +16,6 @@ setup(
     extra_requires=[
         'pytest==3.0.6'
     ],
-    entry_points = {
-        'pytest11':[
-            'nameko_mongodb=nameko_mongodb.pytest_fixtures'
-        ]
-    },
     zip_safe=True,
     license='Apache License, Version 2.0',
     classifiers=[
