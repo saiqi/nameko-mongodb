@@ -41,9 +41,11 @@ def container(config):
 def database(container):
    return MongoDatabase().bind(container, 'database')
 
+
 def test_setup(database):
     database.setup()
     assert isinstance(database.client, MongoClient)
+    assert isinstance(database.database, Database)
 
 
 def test_stop(database):
@@ -60,38 +62,6 @@ def test_get_dependency(database):
     worker_ctx = Mock(spec=WorkerContext)
     db = database.get_dependency(worker_ctx)
     assert isinstance(db, Database)
-    assert database.databases[worker_ctx] is db
-
-
-def test_multiple_workers(database):
-    database.setup()
-
-    worker_ctx_1 = Mock(spec=WorkerContext)
-    db_1 = database.get_dependency(worker_ctx_1)
-    assert isinstance(db_1, Database)
-    assert database.databases[worker_ctx_1] is db_1
-
-    worker_ctx_2 = Mock(spec=WorkerContext)
-    db_2 = database.get_dependency(worker_ctx_2)
-    assert isinstance(db_2, Database)
-    assert database.databases[worker_ctx_2] is db_2
-
-    assert database.databases == WeakKeyDictionary({
-        worker_ctx_1: db_1,
-        worker_ctx_2: db_2
-    })
-
-
-def test_weakref(database):
-    database.setup()
-
-    worker_ctx = Mock(spec=WorkerContext)
-    db = database.get_dependency(worker_ctx)
-    assert isinstance(db, Database)
-    assert database.databases[worker_ctx] is db
-
-    database.worker_teardown(worker_ctx)
-    assert worker_ctx not in database.databases
 
 
 def test_end_to_end(db_url, container_factory):
