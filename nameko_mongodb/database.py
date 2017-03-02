@@ -40,7 +40,7 @@ class MongoDatabase(DependencyProvider):
             method_name = worker_ctx.entrypoint.method_name
             call_id = worker_ctx.call_id
 
-            self.database['_logging'].insert_one(
+            self.database['logging'].insert_one(
                 {
                     'call_id': call_id,
                     'service_name': service_name,

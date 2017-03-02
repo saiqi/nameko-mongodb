@@ -26,7 +26,7 @@ class DummyService(object):
         
     @dummy
     def get_logs(self):
-        res = self.database['_logging'].find({})
+        res = self.database['logging'].find({})
         return list(res)
 
 
