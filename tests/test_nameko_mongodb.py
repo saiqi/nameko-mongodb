@@ -1,4 +1,3 @@
-from weakref import WeakKeyDictionary
 import pytest
 from mock import Mock
 from nameko.testing.services import dummy, entrypoint_hook
@@ -23,11 +22,6 @@ class DummyService(object):
     def find_one(self, query):
         doc = self.database.test_collection.find_one(query)
         return doc
-        
-    @dummy
-    def get_logs(self):
-        res = self.database['logging'].find({})
-        return list(res)
 
 
 @pytest.fixture
@@ -83,7 +77,10 @@ def test_end_to_end(db_url, container_factory):
     with entrypoint_hook(container, 'find_one') as find_one:
         doc = find_one({'toto': 'titi'})
         assert doc['toto'] == 'titi'
-        
-    with entrypoint_hook(container, 'get_logs') as get_logs:
-        logs = get_logs()
-        assert len(logs) != 0
+
+    client = MongoClient(config['MONGODB_CONNECTION_URL'])
+    db = client.dummy_service
+    logs = db.logging.find({})
+
+    for r in logs:
+        assert r['status'] == 'SUCCESS'

@@ -23,7 +23,7 @@ class MongoDatabase(DependencyProvider):
                                        self.container.config['MONGODB_PASSWORD'],
                                        source=self.container.config['MONGODB_AUTHENTICATION_BASE'])
 
-        self.database['_logging'].create_index('call_id')
+        self.database['logging'].create_index('call_id')
 
     def stop(self):
         self.client.close()
@@ -63,7 +63,7 @@ class MongoDatabase(DependencyProvider):
 
             start = self.logs.pop(worker_ctx)
 
-            self.database['_logging'].update_one(
+            self.database['logging'].update_one(
                 {'call_id': call_id},
                 {
                     '$set': {
