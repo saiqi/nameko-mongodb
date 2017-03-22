@@ -22,6 +22,10 @@ class DummyService(object):
     def find_one(self, query):
         doc = self.database.test_collection.find_one(query)
         return doc
+        
+    @dummy
+    def corrupted_method(self):
+        return 1/0
 
 
 @pytest.fixture
@@ -77,10 +81,22 @@ def test_end_to_end(db_url, container_factory):
     with entrypoint_hook(container, 'find_one') as find_one:
         doc = find_one({'toto': 'titi'})
         assert doc['toto'] == 'titi'
+        
+    with entrypoint_hook(container, 'corrupted_method') as corrupted_method:
+        try:
+            corrupted_method()
+        except:
+            pass
 
     client = MongoClient(config['MONGODB_CONNECTION_URL'])
     db = client.dummy_service
     logs = db.logging.find({})
 
     for r in logs:
-        assert r['status'] == 'SUCCESS'
+        if r['method_name'] == 'find_one':
+            assert r['status'] == 'SUCCESS'
+        elif r['method_name'] == 'insert_one':
+            assert r['status'] == 'SUCCESS'
+        elif r['method_name'] == 'corrupted_method':
+            assert r['status'] == 'FAILED'
+            assert r['exception']

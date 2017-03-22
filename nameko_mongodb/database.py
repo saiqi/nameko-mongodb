@@ -23,7 +23,9 @@ class MongoDatabase(DependencyProvider):
                                        self.container.config['MONGODB_PASSWORD'],
                                        source=self.container.config['MONGODB_AUTHENTICATION_BASE'])
 
-        self.database['logging'].create_index('call_id')
+        if self.result_backend:
+            self.database.logging.create_index('start', expireAfterSeconds=24*60*60)
+            self.database.logging.create_index('call_id')
 
     def stop(self):
         self.client.close()
@@ -40,7 +42,7 @@ class MongoDatabase(DependencyProvider):
             method_name = worker_ctx.entrypoint.method_name
             call_id = worker_ctx.call_id
 
-            self.database['logging'].insert_one(
+            self.database.logging.insert_one(
                 {
                     'call_id': call_id,
                     'service_name': service_name,
@@ -63,13 +65,14 @@ class MongoDatabase(DependencyProvider):
 
             start = self.logs.pop(worker_ctx)
 
-            self.database['logging'].update_one(
+            self.database.logging.update_one(
                 {'call_id': call_id},
                 {
                     '$set': {
                         'status': status,
                         'end': now,
-                        'elapsed': (now - start).seconds
+                        'elapsed': (now - start).seconds,
+                        'exception': str(exc_info)
                     }
                 }
             )
