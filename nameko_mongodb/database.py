@@ -72,7 +72,7 @@ class MongoDatabase(DependencyProvider):
                         'status': status,
                         'end': now,
                         'elapsed': (now - start).seconds,
-                        'exception': str(exc_info)
+                        'exception': str(exc_info[1]) if exc_info is not None else None
                     }
                 }
             )
