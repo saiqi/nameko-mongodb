@@ -3,6 +3,8 @@ import datetime
 
 from pymongo import MongoClient
 from nameko.extensions import DependencyProvider
+from nameko.exceptions import safe_for_serialization
+
 
 
 class MongoDatabase(DependencyProvider):
@@ -72,7 +74,7 @@ class MongoDatabase(DependencyProvider):
                         'status': status,
                         'end': now,
                         'elapsed': (now - start).seconds,
-                        'exception': str(exc_info[1]) if exc_info is not None else None
+                        'exception': safe_for_serialization(exc_info) if exc_info is not None else None
                     }
                 }
             )
